@@ -24,6 +24,7 @@ namespace CMaker
         public const string DEBUG_FLAG = "debug";
         public const string AUTO = "auto";
         public const string LIBS = "libs";
+        public const string LINKFLAG = "linkflag";
 
         const string CMakeFileDirectoryName = "cmakebuild";
 
@@ -32,19 +33,20 @@ namespace CMaker
 
         static void Main(string[] args)
         {
-            if (args.Length == 1 && args[0] == "-h")
+            //modified by Ke Yang 20150929
+            if (NeedHelp(args))
             {
                 ShowHelp();
-                return;
+                return; 
             }
-            else if(args.Length==0)
-            { 
-                ShowHelp();
-                return;
-            }
+
             //Settings[PROJECTNAME]
-            DefaultValue();
+            HardLevel( args );
+            //DefaultValue();
+
             ReadArrengment(args);
+
+
 
             if (!Settings.ContainsKey(PROJECTNAME) || string.IsNullOrEmpty(Settings[PROJECTNAME]))
             {
@@ -78,8 +80,19 @@ namespace CMaker
             if (Settings.ContainsKey(DEBUG_FLAG) && !string.IsNullOrEmpty(Settings[DEBUG_FLAG]))
             {
                 OutputData.AppendLine(string.Format("SET (CMAKE_BUILD_TYPE Debug)"));
-                OutputData.AppendLine(string.Format("SET (CMAKE_CXX_FLAGS_DEBUG \"{0}\")", Settings[DEBUG_FLAG]));
+                //Addjust by Ke Yang
+                if (DEBUG_FLAG != "diablo")
+                {
+                    OutputData.AppendLine(string.Format("SET (CMAKE_CXX_FLAGS_DEBUG \"{0}\")", Settings[DEBUG_FLAG]));
+                }
             }
+
+            if (Settings.ContainsKey(LINKFLAG) && !string.IsNullOrEmpty(Settings[LINKFLAG]))
+            {
+
+                OutputData.AppendLine(string.Format("SET (CMAKE_EXE_LINKER_FLAGS \"{0}\")", Settings[LINKFLAG]));
+            }
+
 
             if (Settings.ContainsKey(LIBS) && !string.IsNullOrEmpty(Settings[LIBS]))
             {
@@ -107,6 +120,37 @@ namespace CMaker
                 Process.Start(psi);
             }
         }
+
+        private static void HardLevel(string[] args)
+        {
+            if (args.Length == 2 && args[1] == "--diablo")
+            {
+                HardDefaultValue();
+            }
+            else
+            {
+                DefaultValue();
+            }
+
+        }
+
+        private static bool NeedHelp(string[] args)
+        {
+            bool result = false;
+            if (args.Length == 0)
+            {
+                result = true;
+            }
+            else if (args.Length == 1)
+            {
+                if (args[0] == "-h" || args[0] == "--help")
+                {
+                    result = true;
+                }
+            }
+            return result;
+        }
+
         static void ShowHelp()
         {
             Console.WriteLine("CMaker");
@@ -120,13 +164,31 @@ namespace CMaker
             Console.WriteLine("       debug:[null](default) - support -g");
             Console.WriteLine("       auto:false(default) - support -g : auto invoke cmake and make");
             Console.WriteLine("       libs:[null] - support libxxx.o,libyyy.o");
+            Console.WriteLine("       --diablo     try it :) ");
         }
+
+        /// <summary>
+        /// add by Ke Yang 20150929
+        /// to use C++11 in a critical level easily
+        /// </summary>
+        static void HardDefaultValue()
+        {
+            Settings[FILETYPE] = "*.cpp,*.h";
+            Settings[OUT] = "exe";
+            Settings[COMPILER] = "/usr/bin/clang++";
+            Settings[FLAG] = "-std=c++11 -stdlib=libc++ -Werror -Weverything -Wno-deprecated-declarations -Wno-disabled-macro-expansion -Wno-float-equal -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-exit-time-destructors -Wno-missing-prototypes -Wno-padded -Wno-old-style-cast";
+            Settings[DEBUG_FLAG] = "diablo";
+            Settings[AUTO] = "false";
+            Settings[LIBS] = "";
+            Settings[LINKFLAG] = "-lc++ -lc++abi";
+        }
+
         static void DefaultValue()
         {
             Settings[FILETYPE] = "*.cpp,*.h";
             Settings[OUT] = "exe";
             Settings[COMPILER] = "/usr/bin/clang++";
-            Settings[FLAG] = "-Wall --std=c++11";
+            Settings[FLAG] = "-Wall -std=c++11";
             Settings[DEBUG_FLAG] = "";
             Settings[AUTO] = "false";
             Settings[LIBS] = "";
