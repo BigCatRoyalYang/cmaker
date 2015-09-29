@@ -81,7 +81,7 @@ namespace CMaker
             {
                 OutputData.AppendLine(string.Format("SET (CMAKE_BUILD_TYPE Debug)"));
                 //Addjust by Ke Yang
-                if (DEBUG_FLAG != "diablo")
+                if (Settings[DEBUG_FLAG] != "diablo")
                 {
                     OutputData.AppendLine(string.Format("SET (CMAKE_CXX_FLAGS_DEBUG \"{0}\")", Settings[DEBUG_FLAG]));
                 }
