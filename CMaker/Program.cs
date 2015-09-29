@@ -46,8 +46,6 @@ namespace CMaker
 
             ReadArrengment(args);
 
-
-
             if (!Settings.ContainsKey(PROJECTNAME) || string.IsNullOrEmpty(Settings[PROJECTNAME]))
             {
                 ShowHelp();
@@ -81,7 +79,7 @@ namespace CMaker
             {
                 OutputData.AppendLine(string.Format("SET (CMAKE_BUILD_TYPE Debug)"));
                 //Addjust by Ke Yang
-                if (Settings[DEBUG_FLAG] != "diablo")
+                if (Settings[DEBUG_FLAG] != "maraton")
                 {
                     OutputData.AppendLine(string.Format("SET (CMAKE_CXX_FLAGS_DEBUG \"{0}\")", Settings[DEBUG_FLAG]));
                 }
@@ -123,7 +121,7 @@ namespace CMaker
 
         private static void HardLevel(string[] args)
         {
-            if (args.Length == 2 && args[1] == "--diablo")
+            if (args.Length == 2 && args[1] == "--maraton")
             {
                 HardDefaultValue();
             }
@@ -164,7 +162,7 @@ namespace CMaker
             Console.WriteLine("       debug:[null](default) - support -g");
             Console.WriteLine("       auto:false(default) - support -g : auto invoke cmake and make");
             Console.WriteLine("       libs:[null] - support libxxx.o,libyyy.o");
-            Console.WriteLine("       --diablo     try it :) ");
+            Console.WriteLine("       --maraton     try it :) ");
         }
 
         /// <summary>
@@ -177,7 +175,7 @@ namespace CMaker
             Settings[OUT] = "exe";
             Settings[COMPILER] = "/usr/bin/clang++";
             Settings[FLAG] = "-std=c++11 -stdlib=libc++ -Werror -Weverything -Wno-deprecated-declarations -Wno-disabled-macro-expansion -Wno-float-equal -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-global-constructors -Wno-exit-time-destructors -Wno-missing-prototypes -Wno-padded -Wno-old-style-cast";
-            Settings[DEBUG_FLAG] = "diablo";
+            Settings[DEBUG_FLAG] = "maraton";
             Settings[AUTO] = "false";
             Settings[LIBS] = "";
             Settings[LINKFLAG] = "-lc++ -lc++abi";
